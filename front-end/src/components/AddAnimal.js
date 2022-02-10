@@ -2,13 +2,14 @@ import axios from 'axios'
 import React, { useState } from 'react'
 import { getTokenFromLocalStorage } from '../helpers/Auth'
 import { useHistory } from 'react-router-dom'
+import { ImageUploadField } from './ImageUploadField'
 
 
 
 const AddAnimal = () => {
   const history = useHistory()
-  const [image, setImage] = useState('')
-  const [url, setUrl] = useState('')
+  // const [image, setImage] = useState('')
+  // const [url, setUrl] = useState('')
   const [formData, setFormData] = useState({
     name: '',
     species: '',
@@ -26,21 +27,8 @@ const AddAnimal = () => {
     setFormData(newFormData)
   }
 
-  const uploadImage = async() => {
-    const data = new FormData()
-    data.append('file', image)
-    data.append('upload_preset', 'animals')
-    data.append('cloud_name','dgcme57zq')
-    try {
-      await axios.get('https://api.cloudinary.com/v1_1/dgcme57zq/image/upload',{
-        method: 'post',
-        body: data
-      })
-      // resp.json()
-      setUrl(data.url)
-    } catch (err){
-      console.log(err)
-    }
+  const handleImageUrl = url => {
+    setFormData({ ...formData, image: url } )
   }
 
   const handleSubmit = (event) => {
@@ -69,9 +57,15 @@ const AddAnimal = () => {
         <div className="field">
           <label className="label">Image</label>
           <div className="control">
-            <input type='file' onChange={(event) =>setImage(event.target.files[0])}/>
-            <button onClick={uploadImage}>Upload</button>
-            <img src={url} alt='#'/>
+            <ImageUploadField          
+              value={formData.image}
+              name="image"
+              handleImageUrl={handleImageUrl}
+            />
+            {formData.image &&
+            <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '40px' }}>
+              <img src={formData.image} alt='image' id='book_image_add' />
+            </div>}
           </div>
         </div>
 
